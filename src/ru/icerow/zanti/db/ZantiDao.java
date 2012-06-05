@@ -33,7 +33,7 @@ public class ZantiDao {
 
     private static final String strGetListDocuments =
             "SELECT ID, NAME, AUTHOR, DESCRIPTION FROM APP.DOCUMENTS "  +
-            "ORDER BY NAME ASC";
+            "ORDER BY ID ASC";
 
     private static final String strAddDocument =
             "INSERT INTO APP.DOCUMENTS " +

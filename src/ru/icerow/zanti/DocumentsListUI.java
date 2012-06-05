@@ -2,19 +2,18 @@ package ru.icerow.zanti;
 
 import java.util.ArrayList;
 import java.util.List;
-import javax.swing.JOptionPane;
 import ru.icerow.zanti.db.ZantiDao;
 
 /**
  *
  * @author Artyom
  */
-public class DocumentsListUI extends javax.swing.JFrame {
+public final class DocumentsListUI extends javax.swing.JFrame {
 
-    private boolean showId = false;
-    private boolean showAuthor = true;
-    private ZantiDao dao;
-    private List<Document> documentsList;
+    private static boolean showId = false;
+    private static boolean showAuthor = true;
+    protected static ZantiDao dao;
+    private static List<Document> documentsList;
     
     /**
      * Creates new form DocumentsListUI
@@ -53,10 +52,14 @@ public class DocumentsListUI extends javax.swing.JFrame {
         jLabel3 = new javax.swing.JLabel();
         jToggleId = new javax.swing.JToggleButton();
         jToggleAuthor = new javax.swing.JToggleButton();
+        jButton1 = new javax.swing.JButton();
 
         setDefaultCloseOperation(javax.swing.WindowConstants.EXIT_ON_CLOSE);
-        setTitle("Система организации и порядка выполнения научно-исследовательских работ");
+        setTitle("Система организации и порядка выполнения НИР");
 
+        jListDocuments.setSelectionMode(javax.swing.ListSelectionModel.SINGLE_SELECTION);
+        jListDocuments.setToolTipText("");
+        jListDocuments.setCursor(new java.awt.Cursor(java.awt.Cursor.DEFAULT_CURSOR));
         jListDocuments.addListSelectionListener(new javax.swing.event.ListSelectionListener() {
             public void valueChanged(javax.swing.event.ListSelectionEvent evt) {
                 jListDocumentsValueChanged(evt);
@@ -113,6 +116,13 @@ public class DocumentsListUI extends javax.swing.JFrame {
         });
         jToolBar2.add(jToggleAuthor);
 
+        jButton1.setText("Добавить НИР");
+        jButton1.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                jButton1ActionPerformed(evt);
+            }
+        });
+
         javax.swing.GroupLayout layout = new javax.swing.GroupLayout(getContentPane());
         getContentPane().setLayout(layout);
         layout.setHorizontalGroup(
@@ -120,20 +130,19 @@ public class DocumentsListUI extends javax.swing.JFrame {
             .addGroup(layout.createSequentialGroup()
                 .addContainerGap()
                 .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+                    .addComponent(jScrollPane3)
+                    .addComponent(jScrollPane1, javax.swing.GroupLayout.Alignment.TRAILING)
+                    .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, layout.createSequentialGroup()
+                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
+                        .addComponent(jButton1)
+                        .addGap(18, 18, 18)
+                        .addComponent(jButtonExit))
                     .addGroup(layout.createSequentialGroup()
                         .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-                            .addComponent(jScrollPane3)
-                            .addComponent(jScrollPane1, javax.swing.GroupLayout.Alignment.TRAILING)
-                            .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, layout.createSequentialGroup()
-                                .addGap(0, 0, Short.MAX_VALUE)
-                                .addComponent(jButtonExit))
-                            .addGroup(layout.createSequentialGroup()
-                                .addComponent(jLabel1)
-                                .addGap(0, 0, Short.MAX_VALUE)))
-                        .addContainerGap())
-                    .addGroup(layout.createSequentialGroup()
-                        .addComponent(jLabel2)
-                        .addContainerGap())))
+                            .addComponent(jLabel1)
+                            .addComponent(jLabel2))
+                        .addGap(0, 0, Short.MAX_VALUE)))
+                .addContainerGap())
             .addComponent(jToolBar2, javax.swing.GroupLayout.DEFAULT_SIZE, 510, Short.MAX_VALUE)
         );
         layout.setVerticalGroup(
@@ -149,7 +158,9 @@ public class DocumentsListUI extends javax.swing.JFrame {
                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
                 .addComponent(jScrollPane3, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                .addComponent(jButtonExit)
+                .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
+                    .addComponent(jButtonExit)
+                    .addComponent(jButton1))
                 .addContainerGap())
         );
 
@@ -178,6 +189,13 @@ public class DocumentsListUI extends javax.swing.JFrame {
             jTextAreaDescription.setText("");
         }
     }//GEN-LAST:event_jListDocumentsValueChanged
+
+    private void jButton1ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jButton1ActionPerformed
+        DocumentDetailsUI detailsForm = new DocumentDetailsUI();
+        detailsForm.parent = this;
+        detailsForm.setModeAdd();
+        detailsForm.setVisible(true);
+    }//GEN-LAST:event_jButton1ActionPerformed
 
     /**
      * @param args the command line arguments
@@ -221,6 +239,7 @@ public class DocumentsListUI extends javax.swing.JFrame {
         });
     }
     // Variables declaration - do not modify//GEN-BEGIN:variables
+    private javax.swing.JButton jButton1;
     private javax.swing.JButton jButtonExit;
     private javax.swing.JLabel jLabel1;
     private javax.swing.JLabel jLabel2;
@@ -239,7 +258,7 @@ public class DocumentsListUI extends javax.swing.JFrame {
         jToggleAuthor.setSelected(showAuthor);        
     }
 
-    private void refreshList() {
+    protected void refreshList() {
         // Remember selection of list
         int selection = jListDocuments.getSelectedIndex();
         
@@ -264,7 +283,7 @@ public class DocumentsListUI extends javax.swing.JFrame {
         jListDocuments.setSelectedIndex(selection);
     }
 
-    private void getList() {
+    protected void getList() {
         documentsList = dao.getListEntries();
     }
 }
