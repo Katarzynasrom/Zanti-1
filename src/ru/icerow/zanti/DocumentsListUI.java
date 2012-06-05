@@ -2,6 +2,7 @@ package ru.icerow.zanti;
 
 import java.util.ArrayList;
 import java.util.List;
+import javax.swing.JOptionPane;
 import ru.icerow.zanti.db.ZantiDao;
 
 /**
@@ -10,20 +11,26 @@ import ru.icerow.zanti.db.ZantiDao;
  */
 public class DocumentsListUI extends javax.swing.JFrame {
 
+    private boolean showId = false;
+    private boolean showAuthor = true;
+    private ZantiDao dao;
+    private List<Document> documentsList;
+    
     /**
      * Creates new form DocumentsListUI
      */
     public DocumentsListUI() {
         initComponents();
         
-        ZantiDao dao = new ZantiDao();
+        // Connect to DB
+        dao = new ZantiDao();
         dao.connect();
-        List<Document> list = dao.getListEntries();
-        List<String> listItems = new ArrayList<>();
-        for (Document d : list) {
-            listItems.add(d.getId() + " - " + d.getName() + " - " + d.getAuthor());
-        }
-        jListDocuments.setListData(listItems.toArray());
+
+        // Get documents list from DB
+        getList();
+
+        // Fill in documents list
+        refreshList();
     }
 
     /**
@@ -38,9 +45,23 @@ public class DocumentsListUI extends javax.swing.JFrame {
         jScrollPane1 = new javax.swing.JScrollPane();
         jListDocuments = new javax.swing.JList();
         jButtonExit = new javax.swing.JButton();
+        jScrollPane3 = new javax.swing.JScrollPane();
+        jTextAreaDescription = new javax.swing.JTextArea();
+        jLabel1 = new javax.swing.JLabel();
+        jLabel2 = new javax.swing.JLabel();
+        jToolBar2 = new javax.swing.JToolBar();
+        jLabel3 = new javax.swing.JLabel();
+        jToggleId = new javax.swing.JToggleButton();
+        jToggleAuthor = new javax.swing.JToggleButton();
 
         setDefaultCloseOperation(javax.swing.WindowConstants.EXIT_ON_CLOSE);
+        setTitle("Система организации и порядка выполнения научно-исследовательских работ");
 
+        jListDocuments.addListSelectionListener(new javax.swing.event.ListSelectionListener() {
+            public void valueChanged(javax.swing.event.ListSelectionEvent evt) {
+                jListDocumentsValueChanged(evt);
+            }
+        });
         jScrollPane1.setViewportView(jListDocuments);
 
         jButtonExit.setText("Выход");
@@ -50,24 +71,83 @@ public class DocumentsListUI extends javax.swing.JFrame {
             }
         });
 
+        jTextAreaDescription.setColumns(20);
+        jTextAreaDescription.setEditable(false);
+        jTextAreaDescription.setRows(5);
+        jTextAreaDescription.setBorder(javax.swing.BorderFactory.createEmptyBorder(1, 1, 1, 1));
+        jTextAreaDescription.setCursor(new java.awt.Cursor(java.awt.Cursor.DEFAULT_CURSOR));
+        jScrollPane3.setViewportView(jTextAreaDescription);
+
+        jLabel1.setText("Список научно-исследовательских работ:");
+
+        jLabel2.setText("Описание выбранной работы:");
+
+        jToolBar2.setBorder(javax.swing.BorderFactory.createBevelBorder(javax.swing.border.BevelBorder.RAISED));
+        jToolBar2.setFloatable(false);
+        jToolBar2.setRollover(true);
+
+        jLabel3.setText("Отображать в списке:");
+        jToolBar2.add(jLabel3);
+
+        jToggleId.setText("Порядковый номер ");
+        jToggleId.setFocusable(false);
+        jToggleId.setHorizontalTextPosition(javax.swing.SwingConstants.CENTER);
+        jToggleId.setMargin(new java.awt.Insets(2, 20, 2, 20));
+        jToggleId.setVerticalTextPosition(javax.swing.SwingConstants.BOTTOM);
+        jToggleId.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                jToggleIdActionPerformed(evt);
+            }
+        });
+        jToolBar2.add(jToggleId);
+
+        jToggleAuthor.setText("Автор");
+        jToggleAuthor.setFocusable(false);
+        jToggleAuthor.setHorizontalTextPosition(javax.swing.SwingConstants.CENTER);
+        jToggleAuthor.setMargin(new java.awt.Insets(2, 20, 2, 20));
+        jToggleAuthor.setVerticalTextPosition(javax.swing.SwingConstants.BOTTOM);
+        jToggleAuthor.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                jToggleAuthorActionPerformed(evt);
+            }
+        });
+        jToolBar2.add(jToggleAuthor);
+
         javax.swing.GroupLayout layout = new javax.swing.GroupLayout(getContentPane());
         getContentPane().setLayout(layout);
         layout.setHorizontalGroup(
             layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-            .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, layout.createSequentialGroup()
+            .addGroup(layout.createSequentialGroup()
                 .addContainerGap()
-                .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.TRAILING)
-                    .addComponent(jScrollPane1, javax.swing.GroupLayout.DEFAULT_SIZE, 465, Short.MAX_VALUE)
+                .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
                     .addGroup(layout.createSequentialGroup()
-                        .addGap(0, 0, Short.MAX_VALUE)
-                        .addComponent(jButtonExit)))
-                .addContainerGap())
+                        .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+                            .addComponent(jScrollPane3)
+                            .addComponent(jScrollPane1, javax.swing.GroupLayout.Alignment.TRAILING)
+                            .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, layout.createSequentialGroup()
+                                .addGap(0, 0, Short.MAX_VALUE)
+                                .addComponent(jButtonExit))
+                            .addGroup(layout.createSequentialGroup()
+                                .addComponent(jLabel1)
+                                .addGap(0, 0, Short.MAX_VALUE)))
+                        .addContainerGap())
+                    .addGroup(layout.createSequentialGroup()
+                        .addComponent(jLabel2)
+                        .addContainerGap())))
+            .addComponent(jToolBar2, javax.swing.GroupLayout.DEFAULT_SIZE, 510, Short.MAX_VALUE)
         );
         layout.setVerticalGroup(
             layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
             .addGroup(layout.createSequentialGroup()
-                .addContainerGap()
-                .addComponent(jScrollPane1, javax.swing.GroupLayout.DEFAULT_SIZE, 342, Short.MAX_VALUE)
+                .addComponent(jToolBar2, javax.swing.GroupLayout.PREFERRED_SIZE, 25, javax.swing.GroupLayout.PREFERRED_SIZE)
+                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, 24, Short.MAX_VALUE)
+                .addComponent(jLabel1)
+                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                .addComponent(jScrollPane1, javax.swing.GroupLayout.PREFERRED_SIZE, 223, javax.swing.GroupLayout.PREFERRED_SIZE)
+                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
+                .addComponent(jLabel2)
+                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                .addComponent(jScrollPane3, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
                 .addComponent(jButtonExit)
                 .addContainerGap())
@@ -79,6 +159,25 @@ public class DocumentsListUI extends javax.swing.JFrame {
     private void jButtonExitActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jButtonExitActionPerformed
         System.exit(0);
     }//GEN-LAST:event_jButtonExitActionPerformed
+
+    private void jToggleIdActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jToggleIdActionPerformed
+        showId = jToggleId.isSelected();
+        refreshList();
+    }//GEN-LAST:event_jToggleIdActionPerformed
+
+    private void jToggleAuthorActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jToggleAuthorActionPerformed
+        showAuthor = jToggleAuthor.isSelected();
+        refreshList();
+    }//GEN-LAST:event_jToggleAuthorActionPerformed
+
+    private void jListDocumentsValueChanged(javax.swing.event.ListSelectionEvent evt) {//GEN-FIRST:event_jListDocumentsValueChanged
+        int index = jListDocuments.getSelectedIndex();
+        if (index!=-1) {
+            jTextAreaDescription.setText(documentsList.get(index).getDescription());
+        } else {
+            jTextAreaDescription.setText("");
+        }
+    }//GEN-LAST:event_jListDocumentsValueChanged
 
     /**
      * @param args the command line arguments
@@ -123,7 +222,49 @@ public class DocumentsListUI extends javax.swing.JFrame {
     }
     // Variables declaration - do not modify//GEN-BEGIN:variables
     private javax.swing.JButton jButtonExit;
+    private javax.swing.JLabel jLabel1;
+    private javax.swing.JLabel jLabel2;
+    private javax.swing.JLabel jLabel3;
     private javax.swing.JList jListDocuments;
     private javax.swing.JScrollPane jScrollPane1;
+    private javax.swing.JScrollPane jScrollPane3;
+    private javax.swing.JTextArea jTextAreaDescription;
+    private javax.swing.JToggleButton jToggleAuthor;
+    private javax.swing.JToggleButton jToggleId;
+    private javax.swing.JToolBar jToolBar2;
     // End of variables declaration//GEN-END:variables
+
+    private void toggleStates() {
+        jToggleId.setSelected(showId);        
+        jToggleAuthor.setSelected(showAuthor);        
+    }
+
+    private void refreshList() {
+        // Remember selection of list
+        int selection = jListDocuments.getSelectedIndex();
+        
+        // Toogle button states
+        this.toggleStates();
+
+        // Show list of documents
+        List<String> listItems = new ArrayList<>();
+        String listItem;
+        for (Document d : documentsList) {
+            listItem = "";
+            if (showId) {
+                listItem += d.getId() + " - ";
+            }
+            listItem += d.getName();
+            if (showAuthor) {
+                listItem += " - " + d.getAuthor();
+            }
+            listItems.add(listItem);
+        }
+        jListDocuments.setListData(listItems.toArray());
+        jListDocuments.setSelectedIndex(selection);
+    }
+
+    private void getList() {
+        documentsList = dao.getListEntries();
+    }
 }

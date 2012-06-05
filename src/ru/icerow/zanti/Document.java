@@ -10,18 +10,10 @@ public class Document {
     private String author;
     private String description;
     
-    public Document(String name, String author) {
-        this(-1, name, author, "");
-    }
-
     public Document(String name, String author, String description) {
         this(-1, name, author, description);
     }
     
-    public Document(int id, String name, String author) {
-        this(id, name, author, "");
-    }
-
     public Document(int id, String name, String author, String description) {
         this.id = id;
         this.name = name;

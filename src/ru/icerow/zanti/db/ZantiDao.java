@@ -32,7 +32,7 @@ public class ZantiDao {
             ")";
 
     private static final String strGetListDocuments =
-            "SELECT ID, NAME, AUTHOR FROM APP.DOCUMENTS "  +
+            "SELECT ID, NAME, AUTHOR, DESCRIPTION FROM APP.DOCUMENTS "  +
             "ORDER BY NAME ASC";
 
     private static final String strAddDocument =
@@ -196,8 +196,9 @@ public class ZantiDao {
                 int id = results.getInt(1);
                 String name = results.getString(2);
                 String author = results.getString(3);
+                String description = results.getString(4);
                 
-                Document entry = new Document(id, name, author);
+                Document entry = new Document(id, name, author, description);
                 listEntries.add(entry);
             }
             
