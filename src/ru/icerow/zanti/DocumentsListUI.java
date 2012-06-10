@@ -49,18 +49,23 @@ public final class DocumentsListUI extends javax.swing.JFrame {
         jLabel1 = new javax.swing.JLabel();
         jLabel2 = new javax.swing.JLabel();
         jToolBar2 = new javax.swing.JToolBar();
+        filler1 = new javax.swing.Box.Filler(new java.awt.Dimension(10, 0), new java.awt.Dimension(10, 0), new java.awt.Dimension(10, 32767));
         jLabel3 = new javax.swing.JLabel();
         jToggleId = new javax.swing.JToggleButton();
         jToggleAuthor = new javax.swing.JToggleButton();
         jButtonAdd = new javax.swing.JButton();
         jButtonEdit = new javax.swing.JButton();
+        jLabel4 = new javax.swing.JLabel();
+        jProgressBar = new javax.swing.JProgressBar();
+        jButtonProgressDetails = new javax.swing.JButton();
+        jSeparator1 = new javax.swing.JSeparator();
+        jButtonProgress = new javax.swing.JButton();
 
         setDefaultCloseOperation(javax.swing.WindowConstants.EXIT_ON_CLOSE);
         setTitle("Система организации и порядка выполнения НИР");
+        setPreferredSize(new java.awt.Dimension(600, 550));
 
         jListDocuments.setSelectionMode(javax.swing.ListSelectionModel.SINGLE_SELECTION);
-        jListDocuments.setToolTipText("");
-        jListDocuments.setCursor(new java.awt.Cursor(java.awt.Cursor.DEFAULT_CURSOR));
         jListDocuments.addListSelectionListener(new javax.swing.event.ListSelectionListener() {
             public void valueChanged(javax.swing.event.ListSelectionEvent evt) {
                 jListDocumentsValueChanged(evt);
@@ -77,20 +82,29 @@ public final class DocumentsListUI extends javax.swing.JFrame {
 
         jTextAreaDescription.setColumns(20);
         jTextAreaDescription.setEditable(false);
+        jTextAreaDescription.setLineWrap(true);
         jTextAreaDescription.setRows(5);
-        jTextAreaDescription.setBorder(javax.swing.BorderFactory.createEmptyBorder(1, 1, 1, 1));
         jTextAreaDescription.setCursor(new java.awt.Cursor(java.awt.Cursor.DEFAULT_CURSOR));
+        jTextAreaDescription.setEnabled(false);
         jScrollPane3.setViewportView(jTextAreaDescription);
 
+        jLabel1.setLabelFor(jListDocuments);
         jLabel1.setText("Список научно-исследовательских работ:");
 
+        jLabel2.setLabelFor(jTextAreaDescription);
         jLabel2.setText("Описание выбранной работы:");
 
-        jToolBar2.setBorder(javax.swing.BorderFactory.createBevelBorder(javax.swing.border.BevelBorder.RAISED));
+        jToolBar2.setBorder(new javax.swing.border.SoftBevelBorder(javax.swing.border.BevelBorder.RAISED));
         jToolBar2.setFloatable(false);
         jToolBar2.setRollover(true);
+        jToolBar2.setAutoscrolls(true);
+        jToolBar2.setCursor(new java.awt.Cursor(java.awt.Cursor.DEFAULT_CURSOR));
+        jToolBar2.setMargin(new java.awt.Insets(10, 10, 10, 10));
+        jToolBar2.add(filler1);
 
+        jLabel3.setLabelFor(jToolBar2);
         jLabel3.setText("Отображать в списке:");
+        jLabel3.setHorizontalTextPosition(javax.swing.SwingConstants.CENTER);
         jToolBar2.add(jLabel3);
 
         jToggleId.setText("Порядковый номер ");
@@ -132,38 +146,67 @@ public final class DocumentsListUI extends javax.swing.JFrame {
             }
         });
 
+        jLabel4.setLabelFor(jProgressBar);
+        jLabel4.setText("Прогресс выполнения выбранной работы:");
+
+        jProgressBar.setEnabled(false);
+        jProgressBar.setStringPainted(true);
+
+        jButtonProgressDetails.setText("Подробнее");
+        jButtonProgressDetails.setEnabled(false);
+
+        jButtonProgress.setText("Уточнить прогресс");
+        jButtonProgress.setEnabled(false);
+
         javax.swing.GroupLayout layout = new javax.swing.GroupLayout(getContentPane());
         getContentPane().setLayout(layout);
         layout.setHorizontalGroup(
             layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+            .addComponent(jToolBar2, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
             .addGroup(layout.createSequentialGroup()
                 .addContainerGap()
                 .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
                     .addComponent(jScrollPane3)
                     .addComponent(jScrollPane1, javax.swing.GroupLayout.Alignment.TRAILING)
+                    .addGroup(layout.createSequentialGroup()
+                        .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+                            .addComponent(jLabel2)
+                            .addComponent(jLabel1)
+                            .addComponent(jLabel4))
+                        .addGap(0, 0, Short.MAX_VALUE))
                     .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, layout.createSequentialGroup()
+                        .addGap(0, 148, Short.MAX_VALUE)
                         .addComponent(jButtonAdd)
                         .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
                         .addComponent(jButtonEdit)
+                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                        .addComponent(jButtonProgress)
                         .addGap(18, 18, 18)
                         .addComponent(jButtonExit))
-                    .addGroup(layout.createSequentialGroup()
-                        .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-                            .addComponent(jLabel1)
-                            .addComponent(jLabel2))
-                        .addGap(0, 0, Short.MAX_VALUE)))
+                    .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, layout.createSequentialGroup()
+                        .addComponent(jProgressBar, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
+                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                        .addComponent(jButtonProgressDetails)))
                 .addContainerGap())
-            .addComponent(jToolBar2, javax.swing.GroupLayout.DEFAULT_SIZE, 510, Short.MAX_VALUE)
+            .addComponent(jSeparator1)
         );
         layout.setVerticalGroup(
             layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
             .addGroup(layout.createSequentialGroup()
                 .addComponent(jToolBar2, javax.swing.GroupLayout.PREFERRED_SIZE, 25, javax.swing.GroupLayout.PREFERRED_SIZE)
-                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, 24, Short.MAX_VALUE)
+                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
                 .addComponent(jLabel1)
                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                .addComponent(jScrollPane1, javax.swing.GroupLayout.PREFERRED_SIZE, 223, javax.swing.GroupLayout.PREFERRED_SIZE)
-                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
+                .addComponent(jScrollPane1, javax.swing.GroupLayout.DEFAULT_SIZE, 310, Short.MAX_VALUE)
+                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                .addComponent(jSeparator1, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
+                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                .addComponent(jLabel4)
+                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
+                    .addComponent(jProgressBar, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
+                    .addComponent(jButtonProgressDetails))
+                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
                 .addComponent(jLabel2)
                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
                 .addComponent(jScrollPane3, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
@@ -171,14 +214,12 @@ public final class DocumentsListUI extends javax.swing.JFrame {
                 .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
                     .addComponent(jButtonExit)
                     .addComponent(jButtonAdd)
-                    .addComponent(jButtonEdit))
+                    .addComponent(jButtonEdit)
+                    .addComponent(jButtonProgress))
                 .addContainerGap())
         );
 
-        pack();
-        java.awt.Dimension screenSize = java.awt.Toolkit.getDefaultToolkit().getScreenSize();
-        java.awt.Dimension dialogSize = getSize();
-        setLocation((screenSize.width-dialogSize.width)/2,(screenSize.height-dialogSize.height)/2);
+        setLocation(new java.awt.Point(0, 0));
     }// </editor-fold>//GEN-END:initComponents
 
     private void jButtonExitActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jButtonExitActionPerformed
@@ -197,13 +238,13 @@ public final class DocumentsListUI extends javax.swing.JFrame {
 
     private void jListDocumentsValueChanged(javax.swing.event.ListSelectionEvent evt) {//GEN-FIRST:event_jListDocumentsValueChanged
         int index = jListDocuments.getSelectedIndex();
-        if (index != -1) {
-            jTextAreaDescription.setText(documentsList.get(index).getDescription());
-            jButtonEdit.setEnabled(true);
-        } else {
-            jTextAreaDescription.setText("");
-            jButtonEdit.setEnabled(false);
-        }
+        boolean selected = index != -1;
+        jTextAreaDescription.setEnabled(selected);
+        jButtonEdit.setEnabled(selected);
+        jButtonProgressDetails.setEnabled(selected);
+        jProgressBar.setEnabled(selected);
+        jButtonProgress.setEnabled(selected);
+        jTextAreaDescription.setText(selected ? documentsList.get(index).getDescription() : "");
     }//GEN-LAST:event_jListDocumentsValueChanged
 
     private void jButtonAddActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jButtonAddActionPerformed
@@ -262,15 +303,21 @@ public final class DocumentsListUI extends javax.swing.JFrame {
         });
     }
     // Variables declaration - do not modify//GEN-BEGIN:variables
+    private javax.swing.Box.Filler filler1;
     private javax.swing.JButton jButtonAdd;
     private javax.swing.JButton jButtonEdit;
     private javax.swing.JButton jButtonExit;
+    private javax.swing.JButton jButtonProgress;
+    private javax.swing.JButton jButtonProgressDetails;
     private javax.swing.JLabel jLabel1;
     private javax.swing.JLabel jLabel2;
     private javax.swing.JLabel jLabel3;
+    private javax.swing.JLabel jLabel4;
     private javax.swing.JList jListDocuments;
+    private javax.swing.JProgressBar jProgressBar;
     private javax.swing.JScrollPane jScrollPane1;
     private javax.swing.JScrollPane jScrollPane3;
+    private javax.swing.JSeparator jSeparator1;
     private javax.swing.JTextArea jTextAreaDescription;
     private javax.swing.JToggleButton jToggleAuthor;
     private javax.swing.JToggleButton jToggleId;
