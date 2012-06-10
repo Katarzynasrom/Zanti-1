@@ -52,7 +52,8 @@ public final class DocumentsListUI extends javax.swing.JFrame {
         jLabel3 = new javax.swing.JLabel();
         jToggleId = new javax.swing.JToggleButton();
         jToggleAuthor = new javax.swing.JToggleButton();
-        jButton1 = new javax.swing.JButton();
+        jButtonAdd = new javax.swing.JButton();
+        jButtonEdit = new javax.swing.JButton();
 
         setDefaultCloseOperation(javax.swing.WindowConstants.EXIT_ON_CLOSE);
         setTitle("Система организации и порядка выполнения НИР");
@@ -116,10 +117,18 @@ public final class DocumentsListUI extends javax.swing.JFrame {
         });
         jToolBar2.add(jToggleAuthor);
 
-        jButton1.setText("Добавить НИР");
-        jButton1.addActionListener(new java.awt.event.ActionListener() {
+        jButtonAdd.setText("Добавить НИР");
+        jButtonAdd.addActionListener(new java.awt.event.ActionListener() {
             public void actionPerformed(java.awt.event.ActionEvent evt) {
-                jButton1ActionPerformed(evt);
+                jButtonAddActionPerformed(evt);
+            }
+        });
+
+        jButtonEdit.setText("Изменить НИР");
+        jButtonEdit.setEnabled(false);
+        jButtonEdit.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                jButtonEditActionPerformed(evt);
             }
         });
 
@@ -133,8 +142,9 @@ public final class DocumentsListUI extends javax.swing.JFrame {
                     .addComponent(jScrollPane3)
                     .addComponent(jScrollPane1, javax.swing.GroupLayout.Alignment.TRAILING)
                     .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, layout.createSequentialGroup()
-                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
-                        .addComponent(jButton1)
+                        .addComponent(jButtonAdd)
+                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                        .addComponent(jButtonEdit)
                         .addGap(18, 18, 18)
                         .addComponent(jButtonExit))
                     .addGroup(layout.createSequentialGroup()
@@ -160,7 +170,8 @@ public final class DocumentsListUI extends javax.swing.JFrame {
                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
                 .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
                     .addComponent(jButtonExit)
-                    .addComponent(jButton1))
+                    .addComponent(jButtonAdd)
+                    .addComponent(jButtonEdit))
                 .addContainerGap())
         );
 
@@ -183,19 +194,28 @@ public final class DocumentsListUI extends javax.swing.JFrame {
 
     private void jListDocumentsValueChanged(javax.swing.event.ListSelectionEvent evt) {//GEN-FIRST:event_jListDocumentsValueChanged
         int index = jListDocuments.getSelectedIndex();
-        if (index!=-1) {
+        if (index != -1) {
             jTextAreaDescription.setText(documentsList.get(index).getDescription());
+            jButtonEdit.setEnabled(true);
         } else {
             jTextAreaDescription.setText("");
+            jButtonEdit.setEnabled(false);
         }
     }//GEN-LAST:event_jListDocumentsValueChanged
 
-    private void jButton1ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jButton1ActionPerformed
+    private void jButtonAddActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jButtonAddActionPerformed
         DocumentDetailsUI detailsForm = new DocumentDetailsUI();
         detailsForm.parent = this;
         detailsForm.setModeAdd();
         detailsForm.setVisible(true);
-    }//GEN-LAST:event_jButton1ActionPerformed
+    }//GEN-LAST:event_jButtonAddActionPerformed
+
+    private void jButtonEditActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jButtonEditActionPerformed
+        DocumentDetailsUI detailsForm = new DocumentDetailsUI();
+        detailsForm.parent = this;
+        detailsForm.setModeEdit(documentsList.get(jListDocuments.getSelectedIndex()).getId());
+        detailsForm.setVisible(true);
+    }//GEN-LAST:event_jButtonEditActionPerformed
 
     /**
      * @param args the command line arguments
@@ -239,7 +259,8 @@ public final class DocumentsListUI extends javax.swing.JFrame {
         });
     }
     // Variables declaration - do not modify//GEN-BEGIN:variables
-    private javax.swing.JButton jButton1;
+    private javax.swing.JButton jButtonAdd;
+    private javax.swing.JButton jButtonEdit;
     private javax.swing.JButton jButtonExit;
     private javax.swing.JLabel jLabel1;
     private javax.swing.JLabel jLabel2;

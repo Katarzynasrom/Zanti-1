@@ -17,9 +17,9 @@ public class ZantiDao {
     private String dbName;
     private final Properties dbProperties;
     private Connection dbConnection;
-    private PreparedStatement stmtGetListDocuments;
     private PreparedStatement stmtGetDocument;
     private PreparedStatement stmtAddDocument;
+    private PreparedStatement stmtEditDocument;
     private boolean isConnected;
     
     // <editor-fold defaultstate="collapsed" desc="Prepared Statements">
@@ -34,6 +34,18 @@ public class ZantiDao {
     private static final String strGetListDocuments =
             "SELECT ID, NAME, AUTHOR, DESCRIPTION FROM APP.DOCUMENTS "  +
             "ORDER BY ID ASC";
+
+    private static final String strGetDocument =
+            "SELECT ID, NAME, AUTHOR, DESCRIPTION FROM APP.DOCUMENTS "  +
+            "WHERE ID = ? " +
+            "ORDER BY ID ASC";
+
+    private static final String strEditDocument =
+            "UPDATE APP.DOCUMENTS " +
+            "SET NAME = ?, " +
+            "    AUTHOR = ?, " +
+            "    DESCRIPTION = ? " +
+            "WHERE ID = ?";
 
     private static final String strAddDocument =
             "INSERT INTO APP.DOCUMENTS " +
@@ -142,6 +154,8 @@ public class ZantiDao {
         try {
             dbConnection = DriverManager.getConnection(dbUrl, dbProperties);
             stmtAddDocument = dbConnection.prepareStatement(strAddDocument, Statement.RETURN_GENERATED_KEYS);
+            stmtGetDocument = dbConnection.prepareStatement(strGetDocument);
+            stmtEditDocument = dbConnection.prepareStatement(strEditDocument);
             
             isConnected = dbConnection != null;
         } catch (SQLException ex) {
@@ -204,12 +218,44 @@ public class ZantiDao {
             
         } catch (SQLException sqle) {
             sqle.printStackTrace();
-            
+          
         }
         
         return listEntries;
     }
     
-    
+    public Document getDocument(int id) {
+        Document document = null;
+        try {
+            stmtGetDocument.clearParameters();
+            stmtGetDocument.setInt(1, id);
+            ResultSet result = stmtGetDocument.executeQuery();
+            if (result.next()) {
+                String name = result.getString("NAME");
+                String author = result.getString("AUTHOR");
+                String description = result.getString("DESCRIPTION");
+                document = new Document(id, name, author, description);
+            }
+        } catch(SQLException sqle) {
+            sqle.printStackTrace();
+        }
+        return document;
+    }
 
+    public boolean editDocument(Document document) {
+        boolean edited = false;
+        try {
+            stmtEditDocument.clearParameters();
+            
+            stmtEditDocument.setString(1, document.getName());
+            stmtEditDocument.setString(2, document.getAuthor());
+            stmtEditDocument.setString(3, document.getDescription());
+            stmtEditDocument.setInt(4, document.getId());
+            stmtEditDocument.executeUpdate();
+            edited = true;
+        } catch(SQLException sqle) {
+            sqle.printStackTrace();
+        }
+        return edited;
+    }
 }

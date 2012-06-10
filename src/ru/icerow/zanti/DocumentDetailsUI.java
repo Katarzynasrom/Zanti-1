@@ -12,6 +12,7 @@ import ru.icerow.zanti.db.ZantiDao;
  * @author Artyom
  */
 public class DocumentDetailsUI extends javax.swing.JFrame {
+    private int id;
     private String mode;
     private ZantiDao dao;
     protected DocumentsListUI parent;
@@ -129,6 +130,7 @@ public class DocumentDetailsUI extends javax.swing.JFrame {
 
     private void formComponentShown(java.awt.event.ComponentEvent evt) {//GEN-FIRST:event_formComponentShown
         changeConfirmButtonText();
+        changeValues();
     }//GEN-LAST:event_formComponentShown
 
     private void jButtonConfirmActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jButtonConfirmActionPerformed
@@ -143,6 +145,13 @@ public class DocumentDetailsUI extends javax.swing.JFrame {
             parent.getList();
             parent.refreshList();
             this.dispose();
+        } else if (mode.equals("edit")) {
+            Document document = new Document(id, jTextFieldName.getText(), 
+                    jTextFieldAuthor.getText(), jTextAreaDescription.getText());
+            dao.editDocument(document);
+            parent.getList();
+            parent.refreshList();
+            this.dispose();            
         }
     }//GEN-LAST:event_jButtonConfirmActionPerformed
 
@@ -207,10 +216,18 @@ public class DocumentDetailsUI extends javax.swing.JFrame {
         mode = "add";
     }
 
+    public void setModeEdit(int id) {
+        mode = "edit";
+        this.id = id;
+    }
+
     private void changeConfirmButtonText() {
         if (mode.equals("add")) {
             jButtonConfirm.setText("Добавить");
+        } else if (mode.equals("edit")) {
+            jButtonConfirm.setText("Изменить");
         }
+
     }
 
     private boolean validateFields() {
@@ -229,5 +246,18 @@ public class DocumentDetailsUI extends javax.swing.JFrame {
             JOptionPane.showMessageDialog(this, sb.toString());
         }
         return valid;
+    }
+
+    private void changeValues() {
+        if (mode.equals("add")) {
+            jTextFieldAuthor.setText("");
+            jTextFieldName.setText("");
+            jTextAreaDescription.setText("");
+        } else if (mode.equals("edit")) {
+            Document document = dao.getDocument(id);
+            jTextFieldAuthor.setText(document.getAuthor());
+            jTextFieldName.setText(document.getName());
+            jTextAreaDescription.setText(document.getDescription());
+        }
     }
 }
