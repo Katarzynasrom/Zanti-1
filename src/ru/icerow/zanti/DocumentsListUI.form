@@ -281,6 +281,9 @@
         <Property name="text" type="java.lang.String" value="&#x423;&#x442;&#x43e;&#x447;&#x43d;&#x438;&#x442;&#x44c; &#x43f;&#x440;&#x43e;&#x433;&#x440;&#x435;&#x441;&#x441;"/>
         <Property name="enabled" type="boolean" value="false"/>
       </Properties>
+      <Events>
+        <EventHandler event="actionPerformed" listener="java.awt.event.ActionListener" parameters="java.awt.event.ActionEvent" handler="jButtonProgressActionPerformed"/>
+      </Events>
     </Component>
   </SubComponents>
 </Form>

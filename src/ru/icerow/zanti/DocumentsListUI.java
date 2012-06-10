@@ -157,6 +157,11 @@ public final class DocumentsListUI extends javax.swing.JFrame {
 
         jButtonProgress.setText("Уточнить прогресс");
         jButtonProgress.setEnabled(false);
+        jButtonProgress.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                jButtonProgressActionPerformed(evt);
+            }
+        });
 
         javax.swing.GroupLayout layout = new javax.swing.GroupLayout(getContentPane());
         getContentPane().setLayout(layout);
@@ -263,6 +268,11 @@ public final class DocumentsListUI extends javax.swing.JFrame {
         detailsForm.setModeEdit(documentsList.get(jListDocuments.getSelectedIndex()).getId());
         detailsForm.setVisible(true);
     }//GEN-LAST:event_jButtonEditActionPerformed
+
+    private void jButtonProgressActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jButtonProgressActionPerformed
+        DocumentProgressUI progressForm = new DocumentProgressUI();
+        progressForm.setVisible(true);
+    }//GEN-LAST:event_jButtonProgressActionPerformed
 
     /**
      * @param args the command line arguments
