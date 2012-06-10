@@ -3,11 +3,15 @@ package ru.icerow.zanti.db;
 import java.io.File;
 import java.io.IOException;
 import java.io.InputStream;
+import java.lang.reflect.Array;
 import java.sql.*;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.List;
 import java.util.Properties;
 import ru.icerow.zanti.Document;
+import ru.icerow.zanti.DocumentStage;
+import ru.icerow.zanti.DocumentStageContent;
 
 /**
  *
@@ -20,9 +24,13 @@ public class ZantiDao {
     private PreparedStatement stmtGetDocument;
     private PreparedStatement stmtAddDocument;
     private PreparedStatement stmtEditDocument;
+    private PreparedStatement stmtAddDocumentStage;
+    private PreparedStatement stmtAddDocumentStageContent;
+    private PreparedStatement stmtGetDocumentStageContent;
     private boolean isConnected;
     
     // <editor-fold defaultstate="collapsed" desc="Prepared Statements">
+    // Tables
     private static final String strCreateDocumentsTable =
             "create table APP.DOCUMENTS (" +
             "    ID          INTEGER NOT NULL PRIMARY KEY GENERATED ALWAYS AS IDENTITY (START WITH 1, INCREMENT BY 1)," +
@@ -31,6 +39,26 @@ public class ZantiDao {
             "    DESCRIPTION LONG VARCHAR" +
             ")";
 
+    private static final String strCreateDocumentStagesTable =
+            "create table APP.DOCUMENTSTAGES (" +
+            "    ID          INTEGER NOT NULL PRIMARY KEY GENERATED ALWAYS AS IDENTITY (START WITH 1, INCREMENT BY 1)," +
+            "    NAME        VARCHAR(255)" +
+            ")";
+
+    private static final String strCreateDocumentStageContentTable =
+            "create table APP.DOCUMENTSTAGECONTENT (" +
+            "    ID          INTEGER NOT NULL PRIMARY KEY GENERATED ALWAYS AS IDENTITY (START WITH 1, INCREMENT BY 1)," +
+            "    NAME        VARCHAR(255), " +
+            "    STAGE_ID    INTEGER NOT NULL" +
+            ")";
+    
+    private static final String strCreateDocumentProgressTable =
+            "create table APP.DOCUMENTPROGRESS (" +
+            "    ID                 INTEGER NOT NULL PRIMARY KEY GENERATED ALWAYS AS IDENTITY (START WITH 1, INCREMENT BY 1)," +
+            "    DOCUMENT_ID        INTEGER NOT NULL, " +
+            "    STAGECONTENT_ID    INTEGER NOT NULL" +
+            ")";
+    // Functions
     private static final String strGetListDocuments =
             "SELECT ID, NAME, AUTHOR, DESCRIPTION FROM APP.DOCUMENTS "  +
             "ORDER BY ID ASC";
@@ -51,7 +79,26 @@ public class ZantiDao {
             "INSERT INTO APP.DOCUMENTS " +
             "   (NAME, AUTHOR, DESCRIPTION) " +
             "VALUES (?, ?, ?)";
-    // </editor-fold>
+
+    private static final String strAddDocumentStage =
+            "INSERT INTO APP.DOCUMENTSTAGES " +
+            "   (NAME) " +
+            "VALUES (?)";
+
+    private static final String strGetDocumentStages =
+            "SELECT ID, NAME FROM APP.DOCUMENTSTAGES "  +
+            "ORDER BY ID ASC";
+
+    private static final String strAddDocumentStageContent =
+            "INSERT INTO APP.DOCUMENTSTAGECONTENT " +
+            "   (NAME, STAGE_ID) " +
+            "VALUES (?, ?)";
+
+    private static final String strGetDocumentStageContent =
+            "SELECT ID, NAME FROM APP.DOCUMENTSTAGECONTENT "  +
+            "WHERE STAGE_ID = ? " +
+            "ORDER BY ID ASC";
+// </editor-fold>
     
     public ZantiDao() {
         dbProperties = loadDBProperties();
@@ -62,6 +109,7 @@ public class ZantiDao {
         loadDatabaseDriver(driverName);
         if(!dbExists()) {
             createDatabase();
+            fillTableData();
         }
     }
 
@@ -125,6 +173,7 @@ public class ZantiDao {
             dbConnection = DriverManager.getConnection(dbUrl, dbProperties);
             bCreated = createTables(dbConnection);
         } catch (SQLException ex) {
+            ex.printStackTrace();
         }
         dbProperties.remove("create");
         return bCreated;
@@ -141,12 +190,80 @@ public class ZantiDao {
         try {
             statement = dbConnection.createStatement();
             statement.execute(strCreateDocumentsTable);
+            statement.execute(strCreateDocumentStagesTable);
+            statement.execute(strCreateDocumentStageContentTable);
+            statement.execute(strCreateDocumentProgressTable);
             bCreatedTables = true;
         } catch (SQLException ex) {
             ex.printStackTrace();
         }
         
         return bCreatedTables;
+    }
+    
+    private void fillTableData() {
+        // <editor-fold defaultstate="collapsed" desc="Sample Data">
+        List<String> stages = Arrays.asList(
+                "Разработка технического задания",
+                "Выбор направлений исследования",
+                "Теоретические и экспериментальные исследования",
+                "Обобщение и оценка результатов исследований"
+                );
+        List<String>[] stagesContent = (List<String>[]) Array.newInstance(List.class, 4);
+        // Stage "Разработка технического задания"
+        stagesContent[0] = Arrays.asList(
+                "Научное прогнозирование",
+                "Анализ результатов фундаментальных и поисковых исследований",
+                "Изучение патентной документации",
+                "Учет требований заказчиков"
+                );
+        
+        // Stage "Выбор направлений исследования"
+        stagesContent[1] = Arrays.asList(
+                "Сбор и изучение научно-технической информации",
+                "Составление аналитического обзора",
+                "Проведение патентных исследований",
+                "Формулирование возможных направлений решения задач, поставленных в ТЗ НИР, и их сравнительная оценка",
+                "Выбор и обоснование принятого направления исследований и способов решения задач",
+                "Сопоставление ожидаемых показателей новой продукции после внедрения результатов НИР с существующими показателями изделий-аналогов",
+                "Оценка ориентировочной экономической эффективности новой продукции",
+                "Разработка общей методики проведения исследований",
+                "Составление промежуточного отчета"
+                );
+        
+        // Stage "Теоретические и экспериментальные исследования"
+        stagesContent[2] = Arrays.asList(
+                "Разработка рабочих гипотез, построение моделей объекта исследований, обоснование допущений",
+                "Выявление необходимости проведения экспериментов для подтверждения отдельных",
+                "Положений теоретических исследований или для получения конкретных значений параметров, необходимых для проведения расчетов",
+                "Разработка методики экспериментальных исследований, подготовка моделей (макетов, экспериментальных образцов), а также испытательного оборудования",
+                "Проведение экспериментов, обработка полученных данных",
+                "Cопоставление результатов эксперимента с теоретическими исследованиями",
+                "Корректировка теоретических моделей объекта",
+                "Проведение при необходимости дополнительных экспериментов",
+                "Проведение технико-экономических исследований",
+                "Cоставление промежуточного отчета"
+                );
+
+        // Stage "Обобщение и оценка результатов исследований"
+        stagesContent[3] = Arrays.asList(
+                "Обобщение результатов предыдущих этапов работ",
+                "Оценка полноты решения задач",
+                "Разработка рекомендаций по дальнейшим исследованиям и проведению ОКР",
+                "Разработка проекта ТЗ на ОКР",
+                "Составление итогового отчета",
+                "Приемка НИР комиссией"
+                );
+        // </editor-fold>
+        
+        this.connect();
+        for (String stage : stages) {
+            int stageId = this.addDocumentStage(new DocumentStage(stage));
+            for (String stageContent : stagesContent[stageId-1]) {
+                this.addDocumentStageContent(new DocumentStageContent(stageContent, stageId));
+            }
+        }
+        this.disconnect();
     }
 
     public boolean connect() {
@@ -156,6 +273,9 @@ public class ZantiDao {
             stmtAddDocument = dbConnection.prepareStatement(strAddDocument, Statement.RETURN_GENERATED_KEYS);
             stmtGetDocument = dbConnection.prepareStatement(strGetDocument);
             stmtEditDocument = dbConnection.prepareStatement(strEditDocument);
+            stmtAddDocumentStage = dbConnection.prepareStatement(strAddDocumentStage, Statement.RETURN_GENERATED_KEYS);
+            stmtAddDocumentStageContent = dbConnection.prepareStatement(strAddDocumentStageContent, Statement.RETURN_GENERATED_KEYS);
+            stmtGetDocumentStageContent = dbConnection.prepareStatement(strGetDocumentStageContent);
             
             isConnected = dbConnection != null;
         } catch (SQLException ex) {
@@ -167,10 +287,10 @@ public class ZantiDao {
     public void disconnect() {
         if(isConnected) {
             String dbUrl = getDatabaseUrl();
-            dbProperties.put("shutdown", "true");
             try {
                 DriverManager.getConnection(dbUrl, dbProperties);
             } catch (SQLException ex) {
+                ex.printStackTrace();
             }
             isConnected = false;
         }
@@ -257,5 +377,75 @@ public class ZantiDao {
             sqle.printStackTrace();
         }
         return edited;
+    }
+    
+    public int addDocumentStage(DocumentStage stage) {
+        int id = -1;
+        try {
+            stmtAddDocumentStage.clearParameters();
+            stmtAddDocumentStage.setString(1, stage.getName());
+            stmtAddDocumentStage.executeUpdate();
+            ResultSet results = stmtAddDocumentStage.getGeneratedKeys();
+            if (results.next()) {
+                id = results.getInt(1);
+            }
+        } catch(SQLException sqle) {
+            sqle.printStackTrace();
+        }
+        return id;
+    }
+    
+    public List<DocumentStage> getStages() {
+        List<DocumentStage> stages = new ArrayList<>();
+        Statement queryStatement;
+        ResultSet results;
+        
+        try {
+            queryStatement = dbConnection.createStatement();
+            results = queryStatement.executeQuery(strGetDocumentStages);
+            while(results.next()) {
+                int id = results.getInt(1);
+                String name = results.getString(2);
+                stages.add(new DocumentStage(id, name));
+            }
+        } catch (SQLException sqle) {
+            sqle.printStackTrace();
+        }
+        return stages;
+    }
+
+    public int addDocumentStageContent(DocumentStageContent stageContent) {
+        int id = -1;
+        try {
+            stmtAddDocumentStageContent.clearParameters();
+            stmtAddDocumentStageContent.setString(1, stageContent.getName());
+            stmtAddDocumentStageContent.setInt(2, stageContent.getStageId());
+            stmtAddDocumentStageContent.executeUpdate();
+            ResultSet results = stmtAddDocumentStageContent.getGeneratedKeys();
+            if (results.next()) {
+                id = results.getInt(1);
+            }
+        } catch(SQLException sqle) {
+            sqle.printStackTrace();
+        }
+        return id;
+    }
+
+    public List<DocumentStageContent> getStageContent(int stageId) {
+        List<DocumentStageContent> stageContent = new ArrayList<>();
+        Document document = null;
+        try {
+            stmtGetDocumentStageContent.clearParameters();
+            stmtGetDocumentStageContent.setInt(1, stageId);
+            ResultSet result = stmtGetDocumentStageContent.executeQuery();
+            while(result.next()) {
+                int id = result.getInt(1);
+                String name = result.getString(2);
+                stageContent.add(new DocumentStageContent(id, name, stageId));
+            }
+        } catch (SQLException sqle) {
+            sqle.printStackTrace();
+        }
+        return stageContent;
     }
 }
