@@ -27,20 +27,6 @@ public class DocumentProgressUI extends javax.swing.JFrame {
         initComponents();
         
         dao = DocumentsListUI.dao;
-        
-//        JPanel panel = new JPanel();
-//        jTabbedPane1.addTab("Test", panel);
-//        JCheckBox checkbox = new JCheckBox("<html> asldjfl asdfjk haskdjfh akjsdh fk jhaskdjfh kjasdkfj aksjdfjhasdkjfhaksjdf alksdjlkasdklfasldk falsd lfalskdflk askld flkasdlkf alsdf lasdfklalsdjfklasdlfaslkdjfas  d d d d ");
-//        JCheckBox checkbox2 = new JCheckBox("test");
-//        JCheckBox checkbox3 = new JCheckBox("test");
-//        JCheckBox checkbox4 = new JCheckBox("test");
-//        checkbox.setLocation(0, 0);
-//        int d = 2+2;
-//        panel.setLayout(new GridLayout(d, 1));
-//        panel.add(checkbox);
-//        panel.add(checkbox2);
-//        panel.add(checkbox3);
-//        panel.add(checkbox4);
         getStages();
         panelCheckBoxes = (List<JCheckBox>[]) Array.newInstance(List.class, stages.size());
         stageContent = (List<DocumentStageContent>[]) Array.newInstance(List.class, stages.size());
@@ -74,25 +60,43 @@ public class DocumentProgressUI extends javax.swing.JFrame {
     private void initComponents() {
 
         jTabbedPane1 = new javax.swing.JTabbedPane();
+        jButtonCancel = new javax.swing.JButton();
+        jButtonSave = new javax.swing.JButton();
 
-        setDefaultCloseOperation(javax.swing.WindowConstants.EXIT_ON_CLOSE);
+        setDefaultCloseOperation(javax.swing.WindowConstants.DISPOSE_ON_CLOSE);
         setTitle("Прогресс разработки НИР");
         setPreferredSize(new java.awt.Dimension(650, 500));
-        addWindowListener(new java.awt.event.WindowAdapter() {
-            public void windowOpened(java.awt.event.WindowEvent evt) {
-                formWindowOpened(evt);
+
+        jButtonCancel.setText("Отмена");
+        jButtonCancel.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                jButtonCancelActionPerformed(evt);
             }
         });
+
+        jButtonSave.setText("Сохранить");
 
         javax.swing.GroupLayout layout = new javax.swing.GroupLayout(getContentPane());
         getContentPane().setLayout(layout);
         layout.setHorizontalGroup(
             layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
             .addComponent(jTabbedPane1, javax.swing.GroupLayout.DEFAULT_SIZE, 400, Short.MAX_VALUE)
+            .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, layout.createSequentialGroup()
+                .addContainerGap(javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
+                .addComponent(jButtonSave)
+                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                .addComponent(jButtonCancel)
+                .addContainerGap())
         );
         layout.setVerticalGroup(
             layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-            .addComponent(jTabbedPane1, javax.swing.GroupLayout.Alignment.TRAILING, javax.swing.GroupLayout.DEFAULT_SIZE, 300, Short.MAX_VALUE)
+            .addGroup(layout.createSequentialGroup()
+                .addComponent(jTabbedPane1, javax.swing.GroupLayout.DEFAULT_SIZE, 270, Short.MAX_VALUE)
+                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
+                    .addComponent(jButtonCancel)
+                    .addComponent(jButtonSave))
+                .addContainerGap())
         );
 
         pack();
@@ -101,9 +105,9 @@ public class DocumentProgressUI extends javax.swing.JFrame {
         setLocation((screenSize.width-dialogSize.width)/2,(screenSize.height-dialogSize.height)/2);
     }// </editor-fold>//GEN-END:initComponents
 
-    private void formWindowOpened(java.awt.event.WindowEvent evt) {//GEN-FIRST:event_formWindowOpened
-        // TODO add your handling code here:
-    }//GEN-LAST:event_formWindowOpened
+    private void jButtonCancelActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jButtonCancelActionPerformed
+        this.dispose();
+    }//GEN-LAST:event_jButtonCancelActionPerformed
 
     /**
      * @param args the command line arguments
@@ -147,6 +151,8 @@ public class DocumentProgressUI extends javax.swing.JFrame {
         });
     }
     // Variables declaration - do not modify//GEN-BEGIN:variables
+    private javax.swing.JButton jButtonCancel;
+    private javax.swing.JButton jButtonSave;
     private javax.swing.JTabbedPane jTabbedPane1;
     // End of variables declaration//GEN-END:variables
 
