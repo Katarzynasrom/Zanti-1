@@ -14,6 +14,7 @@ public final class DocumentsListUI extends javax.swing.JFrame {
     private static boolean showAuthor = true;
     protected static ZantiDao dao;
     private static List<Document> documentsList;
+    private int stageContentCount;
     
     /**
      * Creates new form DocumentsListUI
@@ -30,6 +31,9 @@ public final class DocumentsListUI extends javax.swing.JFrame {
 
         // Fill in documents list
         refreshList();
+        
+        // Get count of document StageContent
+        stageContentCount = dao.getAllStageContent().size();
     }
 
     /**
@@ -57,13 +61,11 @@ public final class DocumentsListUI extends javax.swing.JFrame {
         jButtonEdit = new javax.swing.JButton();
         jLabel4 = new javax.swing.JLabel();
         jProgressBar = new javax.swing.JProgressBar();
-        jButtonProgressDetails = new javax.swing.JButton();
         jSeparator1 = new javax.swing.JSeparator();
         jButtonProgress = new javax.swing.JButton();
 
         setDefaultCloseOperation(javax.swing.WindowConstants.EXIT_ON_CLOSE);
         setTitle("Система организации и порядка выполнения НИР");
-        setPreferredSize(new java.awt.Dimension(600, 550));
 
         jListDocuments.setSelectionMode(javax.swing.ListSelectionModel.SINGLE_SELECTION);
         jListDocuments.addListSelectionListener(new javax.swing.event.ListSelectionListener() {
@@ -152,9 +154,6 @@ public final class DocumentsListUI extends javax.swing.JFrame {
         jProgressBar.setEnabled(false);
         jProgressBar.setStringPainted(true);
 
-        jButtonProgressDetails.setText("Подробнее");
-        jButtonProgressDetails.setEnabled(false);
-
         jButtonProgress.setText("Уточнить прогресс");
         jButtonProgress.setEnabled(false);
         jButtonProgress.addActionListener(new java.awt.event.ActionListener() {
@@ -188,10 +187,7 @@ public final class DocumentsListUI extends javax.swing.JFrame {
                         .addComponent(jButtonProgress)
                         .addGap(18, 18, 18)
                         .addComponent(jButtonExit))
-                    .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, layout.createSequentialGroup()
-                        .addComponent(jProgressBar, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
-                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                        .addComponent(jButtonProgressDetails)))
+                    .addComponent(jProgressBar, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
                 .addContainerGap())
             .addComponent(jSeparator1)
         );
@@ -202,15 +198,13 @@ public final class DocumentsListUI extends javax.swing.JFrame {
                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
                 .addComponent(jLabel1)
                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                .addComponent(jScrollPane1, javax.swing.GroupLayout.DEFAULT_SIZE, 310, Short.MAX_VALUE)
+                .addComponent(jScrollPane1, javax.swing.GroupLayout.DEFAULT_SIZE, 314, Short.MAX_VALUE)
                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
                 .addComponent(jSeparator1, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
                 .addComponent(jLabel4)
                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
-                    .addComponent(jProgressBar, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
-                    .addComponent(jButtonProgressDetails))
+                .addComponent(jProgressBar, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
                 .addComponent(jLabel2)
                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
@@ -249,8 +243,8 @@ public final class DocumentsListUI extends javax.swing.JFrame {
         boolean selected = index != -1;
         jTextAreaDescription.setEnabled(selected);
         jButtonEdit.setEnabled(selected);
-        jButtonProgressDetails.setEnabled(selected);
         jProgressBar.setEnabled(selected);
+        jProgressBar.setValue(selected ? getProgress() : 0);
         jButtonProgress.setEnabled(selected);
         jTextAreaDescription.setText(selected ? documentsList.get(index).getDescription() : "");
     }//GEN-LAST:event_jListDocumentsValueChanged
@@ -271,6 +265,7 @@ public final class DocumentsListUI extends javax.swing.JFrame {
 
     private void jButtonProgressActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jButtonProgressActionPerformed
         DocumentProgressUI progressForm = new DocumentProgressUI(getDocumentId());
+        progressForm.parent = this;
         progressForm.setVisible(true);
     }//GEN-LAST:event_jButtonProgressActionPerformed
 
@@ -321,7 +316,6 @@ public final class DocumentsListUI extends javax.swing.JFrame {
     private javax.swing.JButton jButtonEdit;
     private javax.swing.JButton jButtonExit;
     private javax.swing.JButton jButtonProgress;
-    private javax.swing.JButton jButtonProgressDetails;
     private javax.swing.JLabel jLabel1;
     private javax.swing.JLabel jLabel2;
     private javax.swing.JLabel jLabel3;
@@ -373,5 +367,10 @@ public final class DocumentsListUI extends javax.swing.JFrame {
 
     private int getDocumentId() {
         return documentsList.get(jListDocuments.getSelectedIndex()).getId();
+    }
+
+    private int getProgress() {
+        float currentProgress = dao.getDocumentProgress(getDocumentId()).size();
+        return Math.round(currentProgress /  stageContentCount * 100);
     }
 }

@@ -23,6 +23,7 @@ public class DocumentProgressUI extends javax.swing.JFrame {
     private Set<Integer> documentProgress;
     private int stageIds[];
     private int documentId;
+    protected DocumentsListUI parent;
     
     /**
      * Creates new form DocumentProgressUI
@@ -136,6 +137,7 @@ public class DocumentProgressUI extends javax.swing.JFrame {
         dao.addDocumentProgress(documentId, addedSelections);
         removedSelections.removeAll(selectedSet);
         dao.delDocumentProgress(documentId, removedSelections);
+        parent.refreshList();
         this.dispose();
     }//GEN-LAST:event_jButtonSaveActionPerformed
 

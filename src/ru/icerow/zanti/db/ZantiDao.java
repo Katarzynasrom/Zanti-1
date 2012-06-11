@@ -99,6 +99,10 @@ public class ZantiDao {
             "WHERE STAGE_ID = ? " +
             "ORDER BY ID ASC";
 
+    private static final String strGetAllDocumentStageContent =
+            "SELECT ID, NAME, STAGE_ID FROM APP.DOCUMENTSTAGECONTENT "  +
+            "ORDER BY ID ASC";
+
     private static final String strAddDocumentProgress =
             "INSERT INTO APP.DOCUMENTPROGRESS " +
             "   (DOCUMENT_ID, STAGECONTENT_ID) " +
@@ -466,6 +470,25 @@ public class ZantiDao {
         return stageContent;
     }
 
+    public List<DocumentStageContent> getAllStageContent() {
+        List<DocumentStageContent> stageContent = new ArrayList<>();
+        Statement queryStatement;
+        ResultSet results;
+        
+        try {
+            queryStatement = dbConnection.createStatement();
+            results = queryStatement.executeQuery(strGetAllDocumentStageContent);
+            while(results.next()) {
+                int id = results.getInt(1);
+                String name = results.getString(2);
+                int stageId = results.getInt(3);
+                stageContent.add(new DocumentStageContent(id, name, stageId));
+            }
+        } catch (SQLException sqle) {
+            sqle.printStackTrace();
+        }
+        return stageContent;
+    }
 
     public void addDocumentProgress(int documentId, Set<Integer> stageContentIds) {
         try {
