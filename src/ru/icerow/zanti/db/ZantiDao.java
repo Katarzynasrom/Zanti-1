@@ -5,10 +5,7 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.lang.reflect.Array;
 import java.sql.*;
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.List;
-import java.util.Properties;
+import java.util.*;
 import ru.icerow.zanti.Document;
 import ru.icerow.zanti.DocumentStage;
 import ru.icerow.zanti.DocumentStageContent;
@@ -27,6 +24,9 @@ public class ZantiDao {
     private PreparedStatement stmtAddDocumentStage;
     private PreparedStatement stmtAddDocumentStageContent;
     private PreparedStatement stmtGetDocumentStageContent;
+    private PreparedStatement stmtAddDocumentProgress;
+    private PreparedStatement stmtGetDocumentProgress;
+    private PreparedStatement stmtDelDocumentProgress;
     private boolean isConnected;
     
     // <editor-fold defaultstate="collapsed" desc="Prepared Statements">
@@ -98,7 +98,21 @@ public class ZantiDao {
             "SELECT ID, NAME FROM APP.DOCUMENTSTAGECONTENT "  +
             "WHERE STAGE_ID = ? " +
             "ORDER BY ID ASC";
-// </editor-fold>
+
+    private static final String strAddDocumentProgress =
+            "INSERT INTO APP.DOCUMENTPROGRESS " +
+            "   (DOCUMENT_ID, STAGECONTENT_ID) " +
+            "VALUES (?, ?)";
+
+    private static final String strGetDocumentProgress =
+            "SELECT ID, STAGECONTENT_ID FROM APP.DOCUMENTPROGRESS "  +
+            "WHERE DOCUMENT_ID = ? " +
+            "ORDER BY ID ASC";
+
+    private static final String strDelDocumentProgress =
+            "DELETE FROM APP.DOCUMENTPROGRESS " +
+            "WHERE DOCUMENT_ID = ? AND STAGECONTENT_ID = ?";
+    // </editor-fold>
     
     public ZantiDao() {
         dbProperties = loadDBProperties();
@@ -276,6 +290,9 @@ public class ZantiDao {
             stmtAddDocumentStage = dbConnection.prepareStatement(strAddDocumentStage, Statement.RETURN_GENERATED_KEYS);
             stmtAddDocumentStageContent = dbConnection.prepareStatement(strAddDocumentStageContent, Statement.RETURN_GENERATED_KEYS);
             stmtGetDocumentStageContent = dbConnection.prepareStatement(strGetDocumentStageContent);
+            stmtAddDocumentProgress = dbConnection.prepareStatement(strAddDocumentProgress, Statement.RETURN_GENERATED_KEYS);
+            stmtGetDocumentProgress = dbConnection.prepareStatement(strGetDocumentProgress);
+            stmtDelDocumentProgress = dbConnection.prepareStatement(strDelDocumentProgress);
             
             isConnected = dbConnection != null;
         } catch (SQLException ex) {
@@ -447,5 +464,47 @@ public class ZantiDao {
             sqle.printStackTrace();
         }
         return stageContent;
+    }
+
+
+    public void addDocumentProgress(int documentId, Set<Integer> stageContentIds) {
+        try {
+            for (int contentId : stageContentIds) {
+                stmtAddDocumentProgress.clearParameters();
+                stmtAddDocumentProgress.setInt(1, documentId);
+                stmtAddDocumentProgress.setInt(2, contentId);
+                stmtAddDocumentProgress.executeUpdate();
+            }
+        } catch(SQLException sqle) {
+            sqle.printStackTrace();
+        }
+    }
+    
+    public Set<Integer> getDocumentProgress(int documentId) {
+        Set<Integer> stageContentIds = new HashSet<>();
+        try {
+            stmtGetDocumentProgress.clearParameters();
+            stmtGetDocumentProgress.setInt(1, documentId);
+            ResultSet results = stmtGetDocumentProgress.executeQuery();
+            while(results.next()) {
+                stageContentIds.add(results.getInt(2));
+            }
+        } catch (SQLException sqle) {
+            sqle.printStackTrace();
+        }
+        return stageContentIds;
+    }
+
+    public void delDocumentProgress(int documentId, Set<Integer> stageContentIds) {
+        try {
+            for (int contentId : stageContentIds) {
+                stmtDelDocumentProgress.clearParameters();
+                stmtDelDocumentProgress.setInt(1, documentId);
+                stmtDelDocumentProgress.setInt(2, contentId);
+                stmtDelDocumentProgress.executeUpdate();
+            }
+        } catch(SQLException sqle) {
+            sqle.printStackTrace();
+        }
     }
 }

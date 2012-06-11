@@ -265,12 +265,12 @@ public final class DocumentsListUI extends javax.swing.JFrame {
     private void jButtonEditActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jButtonEditActionPerformed
         DocumentDetailsUI detailsForm = new DocumentDetailsUI();
         detailsForm.parent = this;
-        detailsForm.setModeEdit(documentsList.get(jListDocuments.getSelectedIndex()).getId());
+        detailsForm.setModeEdit(getDocumentId());
         detailsForm.setVisible(true);
     }//GEN-LAST:event_jButtonEditActionPerformed
 
     private void jButtonProgressActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jButtonProgressActionPerformed
-        DocumentProgressUI progressForm = new DocumentProgressUI();
+        DocumentProgressUI progressForm = new DocumentProgressUI(getDocumentId());
         progressForm.setVisible(true);
     }//GEN-LAST:event_jButtonProgressActionPerformed
 
@@ -369,5 +369,9 @@ public final class DocumentsListUI extends javax.swing.JFrame {
 
     protected void getList() {
         documentsList = dao.getListEntries();
+    }
+
+    private int getDocumentId() {
+        return documentsList.get(jListDocuments.getSelectedIndex()).getId();
     }
 }

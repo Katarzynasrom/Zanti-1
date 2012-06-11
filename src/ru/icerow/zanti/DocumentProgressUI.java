@@ -3,7 +3,9 @@ package ru.icerow.zanti;
 import java.awt.GridLayout;
 import java.lang.reflect.Array;
 import java.util.ArrayList;
+import java.util.HashSet;
 import java.util.List;
+import java.util.Set;
 import javax.swing.JCheckBox;
 import javax.swing.JPanel;
 import ru.icerow.zanti.db.ZantiDao;
@@ -14,23 +16,27 @@ import ru.icerow.zanti.db.ZantiDao;
  */
 public class DocumentProgressUI extends javax.swing.JFrame {
     private ZantiDao dao;
-    List<DocumentStage> stages;
-    List<JPanel> panels;
-    List<DocumentStageContent>[] stageContent;
-    List<JCheckBox>[] panelCheckBoxes;
-    int stageIds[];
+    private List<DocumentStage> stages;
+    private List<JPanel> panels;
+    private List<DocumentStageContent>[] stageContent;
+    private List<JCheckBox>[] panelCheckBoxes;
+    private Set<Integer> documentProgress;
+    private int stageIds[];
+    private int documentId;
     
     /**
      * Creates new form DocumentProgressUI
      */
-    public DocumentProgressUI() {
+    public DocumentProgressUI(int documentId) {
         initComponents();
-        
+
+        this.documentId = documentId;
         dao = DocumentsListUI.dao;
         getStages();
         panelCheckBoxes = (List<JCheckBox>[]) Array.newInstance(List.class, stages.size());
         stageContent = (List<DocumentStageContent>[]) Array.newInstance(List.class, stages.size());
         panels = new ArrayList<>();
+        documentProgress = dao.getDocumentProgress(documentId);
         stageIds = new int[stages.size()];
         for (DocumentStage stage : stages) {
             JPanel panel = new JPanel();
@@ -44,6 +50,7 @@ public class DocumentProgressUI extends javax.swing.JFrame {
             panel.setLayout(new GridLayout(stageContent[tabNumber].size(), 1));
             for (DocumentStageContent content : stageContent[tabNumber]) {
                 JCheckBox checkBox = new JCheckBox("<html>" + content.getName() + "</html>");
+                checkBox.setSelected(documentProgress.contains(content.getId()));
                 panelCheckBoxes[tabNumber].add(checkBox);
                 panel.add(checkBox);
             }
@@ -75,6 +82,11 @@ public class DocumentProgressUI extends javax.swing.JFrame {
         });
 
         jButtonSave.setText("Сохранить");
+        jButtonSave.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                jButtonSaveActionPerformed(evt);
+            }
+        });
 
         javax.swing.GroupLayout layout = new javax.swing.GroupLayout(getContentPane());
         getContentPane().setLayout(layout);
@@ -109,47 +121,24 @@ public class DocumentProgressUI extends javax.swing.JFrame {
         this.dispose();
     }//GEN-LAST:event_jButtonCancelActionPerformed
 
-    /**
-     * @param args the command line arguments
-     */
-    public static void main(String args[]) {
-        /*
-         * Set the Nimbus look and feel
-         */
-        //<editor-fold defaultstate="collapsed" desc=" Look and feel setting code (optional) ">
-        /*
-         * If Nimbus (introduced in Java SE 6) is not available, stay with the
-         * default look and feel. For details see
-         * http://download.oracle.com/javase/tutorial/uiswing/lookandfeel/plaf.html
-         */
-        try {
-            for (javax.swing.UIManager.LookAndFeelInfo info : javax.swing.UIManager.getInstalledLookAndFeels()) {
-                if ("Nimbus".equals(info.getName())) {
-                    javax.swing.UIManager.setLookAndFeel(info.getClassName());
-                    break;
+    private void jButtonSaveActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jButtonSaveActionPerformed
+        Set<Integer> selectedSet = new HashSet<>();
+        for (int i=0; i<stages.size(); i++) {
+            for (int j=0; j<stageContent[i].size(); j++) {
+                if (panelCheckBoxes[i].get(j).isSelected()) {
+                    selectedSet.add(stageContent[i].get(j).getId());
                 }
             }
-        } catch (ClassNotFoundException ex) {
-            java.util.logging.Logger.getLogger(DocumentProgressUI.class.getName()).log(java.util.logging.Level.SEVERE, null, ex);
-        } catch (InstantiationException ex) {
-            java.util.logging.Logger.getLogger(DocumentProgressUI.class.getName()).log(java.util.logging.Level.SEVERE, null, ex);
-        } catch (IllegalAccessException ex) {
-            java.util.logging.Logger.getLogger(DocumentProgressUI.class.getName()).log(java.util.logging.Level.SEVERE, null, ex);
-        } catch (javax.swing.UnsupportedLookAndFeelException ex) {
-            java.util.logging.Logger.getLogger(DocumentProgressUI.class.getName()).log(java.util.logging.Level.SEVERE, null, ex);
         }
-        //</editor-fold>
+        Set<Integer> addedSelections = new HashSet<>(selectedSet);
+        Set<Integer> removedSelections = new HashSet<>(documentProgress);
+        addedSelections.removeAll(documentProgress);
+        dao.addDocumentProgress(documentId, addedSelections);
+        removedSelections.removeAll(selectedSet);
+        dao.delDocumentProgress(documentId, removedSelections);
+        this.dispose();
+    }//GEN-LAST:event_jButtonSaveActionPerformed
 
-        /*
-         * Create and display the form
-         */
-        java.awt.EventQueue.invokeLater(new Runnable() {
-
-            public void run() {
-                new DocumentProgressUI().setVisible(true);
-            }
-        });
-    }
     // Variables declaration - do not modify//GEN-BEGIN:variables
     private javax.swing.JButton jButtonCancel;
     private javax.swing.JButton jButtonSave;
