@@ -182,7 +182,7 @@ public final class DocumentsListUI extends javax.swing.JFrame {
             }
         });
 
-        jComboBoxReportType.setModel(new javax.swing.DefaultComboBoxModel(new String[] { "txt" }));
+        jComboBoxReportType.setModel(new javax.swing.DefaultComboBoxModel(new String[] { "txt", "html" }));
 
         javax.swing.GroupLayout layout = new javax.swing.GroupLayout(getContentPane());
         getContentPane().setLayout(layout);
@@ -319,6 +319,9 @@ public final class DocumentsListUI extends javax.swing.JFrame {
         switch (jComboBoxReportType.getSelectedItem().toString()) {
             case "txt":
                 report = new TextReport();
+                break;
+            case "html":
+                report = new HtmlReport();
                 break;
         }
         report.generateReport(documentsList);
