@@ -66,6 +66,8 @@ public final class DocumentsListUI extends javax.swing.JFrame {
         jSeparator1 = new javax.swing.JSeparator();
         jButtonProgress = new javax.swing.JButton();
         jButtonDelete = new javax.swing.JButton();
+        jButtonReport = new javax.swing.JButton();
+        jComboBoxReportType = new javax.swing.JComboBox();
 
         setDefaultCloseOperation(javax.swing.WindowConstants.EXIT_ON_CLOSE);
         setTitle("Система организации и порядка выполнения НИР");
@@ -173,6 +175,15 @@ public final class DocumentsListUI extends javax.swing.JFrame {
             }
         });
 
+        jButtonReport.setText("Отчёт");
+        jButtonReport.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                jButtonReportActionPerformed(evt);
+            }
+        });
+
+        jComboBoxReportType.setModel(new javax.swing.DefaultComboBoxModel(new String[] { "txt" }));
+
         javax.swing.GroupLayout layout = new javax.swing.GroupLayout(getContentPane());
         getContentPane().setLayout(layout);
         layout.setHorizontalGroup(
@@ -190,6 +201,9 @@ public final class DocumentsListUI extends javax.swing.JFrame {
                             .addComponent(jLabel4))
                         .addGap(0, 0, Short.MAX_VALUE))
                     .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, layout.createSequentialGroup()
+                        .addComponent(jComboBoxReportType, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
+                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                        .addComponent(jButtonReport)
                         .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
                         .addComponent(jButtonAdd)
                         .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
@@ -230,7 +244,9 @@ public final class DocumentsListUI extends javax.swing.JFrame {
                     .addComponent(jButtonExit)
                     .addComponent(jButtonAdd)
                     .addComponent(jButtonEdit)
-                    .addComponent(jButtonDelete))
+                    .addComponent(jButtonDelete)
+                    .addComponent(jButtonReport)
+                    .addComponent(jComboBoxReportType, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))
                 .addContainerGap())
         );
 
@@ -298,6 +314,16 @@ public final class DocumentsListUI extends javax.swing.JFrame {
         }
     }//GEN-LAST:event_jButtonDeleteActionPerformed
 
+    private void jButtonReportActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jButtonReportActionPerformed
+        Report report = null;
+        switch (jComboBoxReportType.getSelectedItem().toString()) {
+            case "txt":
+                report = new TextReport();
+                break;
+        }
+        report.generateReport(documentsList);
+    }//GEN-LAST:event_jButtonReportActionPerformed
+
     /**
      * @param args the command line arguments
      */
@@ -346,6 +372,8 @@ public final class DocumentsListUI extends javax.swing.JFrame {
     private javax.swing.JButton jButtonEdit;
     private javax.swing.JButton jButtonExit;
     private javax.swing.JButton jButtonProgress;
+    private javax.swing.JButton jButtonReport;
+    private javax.swing.JComboBox jComboBoxReportType;
     private javax.swing.JLabel jLabel1;
     private javax.swing.JLabel jLabel2;
     private javax.swing.JLabel jLabel3;
