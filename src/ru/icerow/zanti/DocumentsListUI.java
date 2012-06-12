@@ -2,6 +2,8 @@ package ru.icerow.zanti;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Set;
+import javax.swing.JOptionPane;
 import ru.icerow.zanti.db.ZantiDao;
 
 /**
@@ -63,6 +65,7 @@ public final class DocumentsListUI extends javax.swing.JFrame {
         jProgressBar = new javax.swing.JProgressBar();
         jSeparator1 = new javax.swing.JSeparator();
         jButtonProgress = new javax.swing.JButton();
+        jButtonDelete = new javax.swing.JButton();
 
         setDefaultCloseOperation(javax.swing.WindowConstants.EXIT_ON_CLOSE);
         setTitle("Система организации и порядка выполнения НИР");
@@ -162,6 +165,14 @@ public final class DocumentsListUI extends javax.swing.JFrame {
             }
         });
 
+        jButtonDelete.setText("Удалить НИР");
+        jButtonDelete.setEnabled(false);
+        jButtonDelete.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                jButtonDeleteActionPerformed(evt);
+            }
+        });
+
         javax.swing.GroupLayout layout = new javax.swing.GroupLayout(getContentPane());
         getContentPane().setLayout(layout);
         layout.setHorizontalGroup(
@@ -179,10 +190,12 @@ public final class DocumentsListUI extends javax.swing.JFrame {
                             .addComponent(jLabel4))
                         .addGap(0, 0, Short.MAX_VALUE))
                     .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, layout.createSequentialGroup()
-                        .addGap(0, 0, Short.MAX_VALUE)
+                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
                         .addComponent(jButtonAdd)
                         .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
                         .addComponent(jButtonEdit)
+                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                        .addComponent(jButtonDelete)
                         .addGap(18, 18, 18)
                         .addComponent(jButtonExit))
                     .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, layout.createSequentialGroup()
@@ -216,7 +229,8 @@ public final class DocumentsListUI extends javax.swing.JFrame {
                 .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
                     .addComponent(jButtonExit)
                     .addComponent(jButtonAdd)
-                    .addComponent(jButtonEdit))
+                    .addComponent(jButtonEdit)
+                    .addComponent(jButtonDelete))
                 .addContainerGap())
         );
 
@@ -245,6 +259,7 @@ public final class DocumentsListUI extends javax.swing.JFrame {
         boolean selected = index != -1;
         jTextAreaDescription.setEnabled(selected);
         jButtonEdit.setEnabled(selected);
+        jButtonDelete.setEnabled(selected);
         jProgressBar.setEnabled(selected);
         jProgressBar.setValue(selected ? getProgress() : 0);
         jButtonProgress.setEnabled(selected);
@@ -270,6 +285,18 @@ public final class DocumentsListUI extends javax.swing.JFrame {
         progressForm.parent = this;
         progressForm.setVisible(true);
     }//GEN-LAST:event_jButtonProgressActionPerformed
+
+    private void jButtonDeleteActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jButtonDeleteActionPerformed
+        if (JOptionPane.showConfirmDialog(this, "Вы действительно хотите удалить НИР - \"" + jListDocuments.getSelectedValue() + "\"?", "Подтверждение удаления", JOptionPane.OK_CANCEL_OPTION, JOptionPane.QUESTION_MESSAGE) == 0) {
+            int documentId = getDocumentId();
+            Set<Integer> progress = dao.getDocumentProgress(documentId);
+            dao.delDocumentProgress(documentId, progress);
+            dao.delDocument(documentId);
+            jListDocuments.setSelectedIndex(-1);
+            getList();
+            refreshList();
+        }
+    }//GEN-LAST:event_jButtonDeleteActionPerformed
 
     /**
      * @param args the command line arguments
@@ -315,6 +342,7 @@ public final class DocumentsListUI extends javax.swing.JFrame {
     // Variables declaration - do not modify//GEN-BEGIN:variables
     private javax.swing.Box.Filler filler1;
     private javax.swing.JButton jButtonAdd;
+    private javax.swing.JButton jButtonDelete;
     private javax.swing.JButton jButtonEdit;
     private javax.swing.JButton jButtonExit;
     private javax.swing.JButton jButtonProgress;

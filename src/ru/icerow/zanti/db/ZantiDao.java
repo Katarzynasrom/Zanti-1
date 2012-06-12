@@ -21,6 +21,7 @@ public class ZantiDao {
     private PreparedStatement stmtGetDocument;
     private PreparedStatement stmtAddDocument;
     private PreparedStatement stmtEditDocument;
+    private PreparedStatement stmtDelDocument;
     private PreparedStatement stmtAddDocumentStage;
     private PreparedStatement stmtAddDocumentStageContent;
     private PreparedStatement stmtGetDocumentStageContent;
@@ -79,6 +80,10 @@ public class ZantiDao {
             "INSERT INTO APP.DOCUMENTS " +
             "   (NAME, AUTHOR, DESCRIPTION) " +
             "VALUES (?, ?, ?)";
+
+    private static final String strDelDocument =
+            "DELETE FROM APP.DOCUMENTS " +
+            "WHERE ID = ?";
 
     private static final String strAddDocumentStage =
             "INSERT INTO APP.DOCUMENTSTAGES " +
@@ -291,6 +296,7 @@ public class ZantiDao {
             stmtAddDocument = dbConnection.prepareStatement(strAddDocument, Statement.RETURN_GENERATED_KEYS);
             stmtGetDocument = dbConnection.prepareStatement(strGetDocument);
             stmtEditDocument = dbConnection.prepareStatement(strEditDocument);
+            stmtDelDocument = dbConnection.prepareStatement(strDelDocument);
             stmtAddDocumentStage = dbConnection.prepareStatement(strAddDocumentStage, Statement.RETURN_GENERATED_KEYS);
             stmtAddDocumentStageContent = dbConnection.prepareStatement(strAddDocumentStageContent, Statement.RETURN_GENERATED_KEYS);
             stmtGetDocumentStageContent = dbConnection.prepareStatement(strGetDocumentStageContent);
@@ -398,6 +404,16 @@ public class ZantiDao {
             sqle.printStackTrace();
         }
         return edited;
+    }
+
+    public void delDocument(int id) {
+        try {
+            stmtDelDocument.clearParameters();
+            stmtDelDocument.setInt(1, id);
+            stmtDelDocument.executeUpdate();
+        } catch(SQLException sqle) {
+            sqle.printStackTrace();
+        }
     }
     
     public int addDocumentStage(DocumentStage stage) {
